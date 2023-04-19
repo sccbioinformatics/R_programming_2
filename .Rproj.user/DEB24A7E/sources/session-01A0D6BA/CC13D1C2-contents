@@ -1,0 +1,48 @@
+# The story so far
+
+You are here because you have a grasp of the R skills required to complete R Programming 1. See [here](https://sccbioinformatics.github.io/R_programming_1/) for the course material. In summary, that course covers:
+
+* RStudio
+  + Navigating the panes
+  + Writing scripts
+* Vectors
+* Matrices
+  + Subsetting
+  + Manipulating
+* Lists
+  * Creating
+  * Accessing
+* Data Frames
+  + Making ggplots from
+* Reading and writing files
+  + Reading in expression data
+  + Writing out tables
+* Flow control basics
+  + `for`,`if`, `else` statements
+* Functions
+  + Creating
+  + Using them
+* `apply`
+  + Using built-in functions like `sum` and `var`
+  + Using `apply` with your own functions
+* Standardising data
+  + z-scoring data for clustering
+* Clustering
+  + Hierarchical clustering rows and columns
+  + `pheatmap`
+* Linear models
+  + Writing the models
+  + Extracting differentially expressed genes
+* Kmeans
+  + Programming from scratch
+  + Starting to write algorithms
+* The Final Project
+  + Clustering using simulated annealing
+
+## What will be covered
+
+All chapter sections start with a second-level (`##`) or higher heading followed by your section title, like the sections above and below here. You can have as many as you want within a chapter.
+
+### An unnumbered section {-}
+
+Chapters and sections are numbered by default. To un-number a heading, add a `{.unnumbered}` or the shorter `{-}` at the end of the heading, like in this section.
