@@ -1,0 +1,13 @@
+# Git and Github
+
+## Subheading
+
+Oscar's git stuff here
+
+```{r,eval=F}
+zs <- function(x){
+  z <- (x-mean(x))/sd(x)
+  z
+}
+```
+
