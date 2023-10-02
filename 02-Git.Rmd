@@ -194,11 +194,26 @@ Finally, we use `git push` to upload our changes (the creation of the `README.md
 
 Whenever there are changes made by anyone else working in the same repository, you can download those changes with `git pull`. In this course however, you will be working alone in your repository.
 
+```{r, echo = FALSE, out.width = 330, out.height = 478 , fig.align = 'center'}
+knitr::include_graphics("images/git_xkcd.png")
+```
+Image from [xkcd 1597](https://xkcd.com/1597/).
+
 ## Further reading
 
-There is *a lot* more that git can do that we haven't covered in this version control crash course. If you have time, you can familiarize yourself with the more advanced concepts of git here.
+There is *a lot* more that git can do that we haven't covered in this version control crash course. If you have time, you can familiarize yourself with some of the more advanced concepts of git here.
 
 Click on a word to expand.
+
+
+<details>
+  <summary>
+    The `.gitignore` file
+  </summary>
+  If you don't want a file to ever be included in a commit, and you don't want to see it in the `git status` command when there are changes in the file, you can add the file to the `.gitignore` file. This file should be in the root of your repository. Any file mentioned in the `.gitignore` will be ignored by commands such as `git status` and `git add`. This is useful for files containing sensitive information, files that are generated when building or running your code, user-specific configuration files, or files that are just for testing.
+  
+  In the `.gitignore`, each file you want ignored should be on a separate line, comments can be written by starting a line with a `#`. Just like `git add`, the `.gitignore` file allows wildcards or directories as input, and will ignore any files matching the wildcard, or any files inside the directory that is ignored.
+</details>
 
 <details>
   <summary>
