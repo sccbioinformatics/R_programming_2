@@ -125,6 +125,9 @@ no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
 Now, git recognizes that `amazing.txt` has been changed, but tells us that we haven't added those changes to the stage, and gives us some familiar hints on how to use `git add`.
+
+It also hints us about one of the usage of `git restore`, a command we haven't mentioned yet. **Note that running** `git restore amazing.txt` **would delete our changes that we have made to this file. This can not be undone.**
+
 It also tells us that the next commit is, so far, empty.
 
 Let's run `git add` and see what  `git status` returns.
@@ -138,9 +141,9 @@ Changes to be committed:
 	modified:   amazing.txt
 ```
 
-Now git shows us that the changes have been staged, and are ready to be committed. Should you here realize that you don't want those changes in this commit, git also gives us a hint on how `git restore` works. We haven't mentioned `git restore` before, it's basically the opposite of `git add`, instead of adding a file to the stage, it removes it from the stage. Again, the contents of the file are untouched by git, it's just git's view of your working tree that is changed.
+Now git shows us that the changes have been staged, and are ready to be committed. Should you here realize that you don't want those changes in this commit, git also gives us another hint on how `git restore --staged` works. Here, it's basically the opposite of `git add`, instead of adding a file to the stage, it removes it from the stage. This time, the contents of the file would be untouched by git, it's just git's view of your working tree that is changed. Be very careful when unstaging files so you don't accidentally lose any work.
 
-Let's make a commit to return to the stage we were in before this section.
+Let's make a commit to return to the state we were in before this section.
 
 ```
 $ git commit -m "add more amazingness"
