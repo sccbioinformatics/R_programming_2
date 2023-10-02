@@ -1,0 +1,197 @@
+# Storing multiple data objects in R
+
+## Lists
+
+We need to put the meta data and the count data in the same R object to keep everything together. From the last tutorial, you will remember we did this using lists:
+
+```{r}
+pbmc <- list(meta=meta, counts=count.filt)
+names(pbmc)
+```
+
+A recap on accing data objects:
+
+```{r}
+pbmc$meta[1:10,] # access the first 10 rows of the metadata
+pbmc[[1]][1:10,] # same as above
+pbmc$counts[1:5,1:10] # first 5 rows and 10 columns of the count data.
+```
+
+**They work, but Why should we not use lists?**
+
+# S4 classes
+S4 classes can be thought of as a list, but with with options to add security. Bioconductor packages are based in S4 classes, as is Seurat which is why we are going to make it our focus here.
+
+Lets setup an S4 class so you can see how it works:
+
+```{r}
+setClass("mysco",slots= c(meta="data.frame",counts="matrix"))
+```
+
+In this line we define what your mysco class/container will accept. Here, only data frames and matrices will be accepted. Lets make an S4 object containing some data:
+
+```{r,results=F}
+pbmc <- new("mysco",meta=meta,counts=count.filt)
+```
+
+You can see that when you call $pbmc$ in the console it will splurge all the data onto the screen. Now is a good time for us to define a function that summarises the objects contents:
+
+```{r}
+setMethod('show', signature = c ('mysco'),
+		definition = function (object) {
+			cat (paste("An object of class", class(object)),"\n" )
+			cat (paste( 'with',nrow(object@counts),'genes and', ncol(object@counts),' cells.'),"\n")
+		}
+)
+```
+
+Lets try it:
+
+```{r}
+pbmc
+```
+
+You can see this is a really nice way of summarising the contents of an object. It's good practise to update this function to summarise any extra elements you add, it will help you track everything going on as you progress with the anlaysis.
+
+## How do I access an S4 class?
+
+To access ***slots*** of an S4 class you need to use the `@` symbol. For example:
+
+```{r,eval=T}
+pbmc@meta[1:5,] #access the first 5 rows of the metadata
+```
+```{r,eval=F}
+pbmc[[1]][1:5,] #does this work?
+```
+
+## Why S4 is useful
+In the definition of the class we'll see that a matrix is required. Lets see what happens when you try and give it something else:
+
+```{r,eval=F}
+pbmc <- new("mysco",meta=meta,counts=data.frame(count.filt))
+```
+
+You can see that it complains because it expected a martrix, but we tried to give it a data frame. This is why S4 classes as useful, there is a sanity check before the object is created so all downstream process work as expected. Speaking of sanity, what do we think of this?
+
+```{r,eval=F}
+pbmc.v2 <- new("mysco",meta=meta,counts=count.filt[,-(1:5)]) # remove the first 5 columns (cells) of the data.
+```
+
+Why is this a terrible thing to do?
+
+```{r,eval=F}
+setValidity("mysco", function(object) {
+  if (ncol(object@counts) != nrow(object@meta)) {
+    "@counts and @meta must be the same length"
+  } else {
+    TRUE
+  }
+})
+```
+
+We can try to make a new mysco object removing a few cells:
+
+```{r,eval=F}
+pbmc.v3 <- new("mysco",meta=meta,counts=count.filt[,-(1:5)]) # remove the first 5 columns (cells) of the data.
+```
+
+What happened?
+You can see that S4 classes are a very safe way of storing data in R because their contents have to be controlled for class and dimensions. Lots of functions fail because what is supplied is not correct. By enforcing standards in a class it should minimise these issues in the future.
+
+***Exercise:*** Extend this validator to check the cell IDs match in the data and metadata.
+
+## Wrapper and accessor functions
+
+Have a look at the Seurat tutorial. You will see a function called `CreateSeuratObject`. This function takes a matrix and then automatically calculates the `features`, `nCounts` and puts it into metadata.
+
+***Exercise:*** Create a function called `CreateMySCO` which take a data matrix (`pbmc.data`) and creates an mysco class containing the raw unfiltered data and the `features`/`nCounts` in the meta slot. Call the resulting object `pbmc`, hence over-writing the current one.
+
+```{r,class.source = 'fold-hide',results=T}
+
+CreateMySCO <- function(mat){
+ 
+  features <- apply(mat >0, 2, sum)
+  nCount <- apply(mat,2,sum)
+  
+  df <- data.frame(features=features,nCount=nCount)
+  
+  msc <- new("mysco",meta=df,counts=mat) 
+  msc
+}
+```
+
+```{r}
+pbmc <- CreateMySCO(pbmc.data)
+pbmc
+```
+
+***Exercise:*** You will see the class reports back the original dimensions of the data. Now that we have this write a function that will calculate the mitochondrial percentage and add this to the metadata (use the code you already have above). Look at the Seurat tutorial for inspiration. Call the function `CalcMitoPct`.
+
+```{r,class.source = 'fold-hide',results=T}
+
+CalcMitoPct <- function(mysco,prefix){
+  
+  mtpc <- 100*apply(mysco@counts[grep(prefix,rownames(mysco@counts)),],2,sum)/apply(mysco@counts,2,sum)
+  mysco@meta$perc.mt <- mtpc
+  mysco
+}
+```
+
+```{r}
+pbmc <- CalcMitoPct(pbmc,"^MT-")
+```
+
+***Exercise:*** Using the ggpot code you already have, put it into a function that takes your mysco S4 object and makes the qc violin and scatter plots. Call this function `MakeQCPlots`
+
+```{r,class.source = 'fold-hide',results=T}
+
+MakeQCPlots <- function(mysco){
+
+  qc.df <- mysco@meta
+  
+  plots <- lapply(names(qc.df), function(variable) {
+    ggplot(qc.df, aes(x = 1, y = qc.df[[variable]], fill = fill_color)) +
+      geom_violin() +
+      labs(x = NULL, y = variable) +
+      scale_fill_manual(values = fill_color, name = variable) +  # Set the fill color
+      theme_minimal() +
+      theme(axis.text.x = element_blank(), 
+            axis.ticks.x = element_blank()) +
+      geom_jitter(shape=".", position=position_jitter(0.2))
+  })
+  #grid.arrange(grobs = plots, ncol = length(plots))
+  
+  plots[[4]] <- ggplot(qc.df, aes(x=nCount, y=perc.mt)) + geom_point(color = fill_color)
+  plots[[5]] <- ggplot(qc.df, aes(x=nCount, y=features)) + geom_point(color = fill_color)
+  
+  grid.arrange(grobs = plots, ncol = 3)
+  
+}
+```
+
+```{r}
+MakeQCPlots(pbmc)
+```
+
+We need a function to filter the data. Write one that does what we did earlier, plus, has an argument that lets the user specify which genes should be removed if they aren't expressed in $x$ cells or more (`min.cells = 3` in the Seurat tutorial).
+
+```{r,class.source = 'fold-hide',eval=T}
+FilterData <- function(mysco,sub,min.cells){
+  
+  min.cls <- apply(mysco@counts >0, 1, sum)
+  
+  d.filt <- subset(mysco@meta,sub)
+  mysco@meta <- d.filt
+  mysco@counts <- mysco@counts[which(min.cls>=min.cells),rownames(d.filt)]
+  mysco
+}
+
+```
+
+Lets use it:
+
+```{r}
+pbmc <- FilterData(pbmc,sub=features > 200 & features < 2500 & perc.mt < 5,min.cells=3)
+pbmc
+```
+

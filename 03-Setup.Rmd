@@ -1,0 +1,93 @@
+# R II
+The aim of this section is to serve as a reminer how data is stored in R, particularly matrices, data frames and lists.
+
+## Getting some data
+
+We will use the standard Peripheral Blood Mononuclear Cells (PBMC) data made and supplied by 10X. It is a small dataset and will serve as a good example. What we are going to do together is create our own stripped-down version of Seurat. This will teach you:
+
+1. How single-cell data is pre-proccessed.
+2. How single-cell and its metadata is stored in R.
+3. Writing functions to analyse this data.
+4. Packaging these functions into a well documented package for use by anyone, anywhere.
+
+Go to the official tutorial on the Seurat website [here](https://satijalab.org/seurat/articles/pbmc3k_tutorial). We will use it to follow along as we write our package to try and do roughly the same thing.
+
+Unlike the R programming I course, you can use ChatGPT if you get stuck, we may as well embrace new tools when they become available.
+
+There is a file called "PBMC_data.rds". The file suffix ".rds" means the file is a "R Data Serialization" file.
+
+***Exercise:*** Look up how to load this file, and load it into a variable called "pbmc.data".
+```{r,class.source = 'fold-hide',results=F}
+pbmc.data <- readRDS("PBMC_data.rds")
+```
+
+After loading the data we can get its dimensions:
+```{r}
+dim(pbmc.data)
+```
+
+***Exercise:*** This is important, find out what class of object it is.
+```{r,class.source = 'fold-hide',results=F}
+class(pbmc.data)
+```
+
+As we (hopefully) know it is faster to work on a matrix than a data frame. Convert it to a matrix and overwrite the same variable name "pbmc.data".
+
+```{r}
+pbmc.data <- as.matrix(pbmc.data)
+```
+
+## QC
+This is where we can start to look at doing some basic QC and filtering. We#ll use the Seurat PBMC tutorial and copy their process as much as possible.
+
+***Exercise:*** Go to the tutorial page and look the first violin plot. Using your matrix of count data, reproduce the plot you see there using ggplot2. You'll need to calculate "nFeature_RNA", "nCount_RNA", and "percent.mt" first! **In a departure from R Programming I, you can use ChatGPT for help**.
+
+```{r,class.source = 'fold-hide',results=T}
+library(ggplot2)
+library(gridExtra)
+
+features <- apply(pbmc.data >0, 2, sum)
+nCount <- apply(pbmc.data,2,sum)
+perc.mt <- 100*apply(pbmc.data[grep("^MT-",rownames(pbmc.data)),],2,sum)/apply(pbmc.data,2,sum)
+
+min.cls <- apply(pbmc.data >0, 1, sum)
+
+qc.df <- data.frame(features=features,nCount=nCount,perc.mt=perc.mt)
+fill_color <- "lightcoral"
+
+plots <- lapply(names(qc.df), function(variable) {
+  ggplot(qc.df, aes(x = 1, y = qc.df[[variable]], fill = fill_color)) +
+    geom_violin() +
+    labs(x = NULL, y = variable) +
+    scale_fill_manual(values = fill_color, name = variable) +  # Set the fill color
+    theme_minimal() +
+    theme(axis.text.x = element_blank(), 
+          axis.ticks.x = element_blank()) +
+    geom_jitter(shape=".", position=position_jitter(0.2))
+})
+
+grid.arrange(grobs = plots, ncol = length(plots))
+```
+
+When you have made something like the above, make the scatter plots which are next in the Seurat tutorial using the numbers you have just calculated.
+
+```{r,class.source = 'fold-hide',results=T}
+library(patchwork)
+p1 <- ggplot(qc.df, aes(x=nCount, y=perc.mt)) + geom_point(color = fill_color)
+p2 <- ggplot(qc.df, aes(x=nCount, y=features)) + geom_point(color = fill_color)
+p1+p2
+```
+
+We have the plots we need to filter the data. Using the same filtering criteria setout in the tutorial, filter the expression data and the metadata you calculated. Check the number of cells and genes you have match what they have in the tutorial.
+
+```{r,class.source = 'fold-hide',results=T}
+library(dplyr)
+meta <- qc.df %>% filter(features  <= 2500) %>% filter(features  >= 200) %>% filter(perc.mt <= 5)
+
+count.filt <- pbmc.data[names(which(min.cls>2)),rownames(meta)]
+dim(count.filt)
+```
+
+
+
+
