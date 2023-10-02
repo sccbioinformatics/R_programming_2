@@ -1,0 +1,3 @@
+# Packages
+We have have a few functions in our back pocket now, but before we carry on making more functions it makes sense to start thinking about making an R package to contain an document all of our functions. Our package will be pushed up to Github where it will be available to use by you, and anyone else in the world. This is how Seurat was made available in the early days before it was officially submitted to CRAN.
+
