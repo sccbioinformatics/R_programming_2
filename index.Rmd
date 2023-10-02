@@ -15,6 +15,7 @@ output:
     toc_float: true
     theme: united
     highlight: tango
+    css: style.css
 
 documentclass: book
 #bibliography: [book.bib, packages.bib]
