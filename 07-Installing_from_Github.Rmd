@@ -1,0 +1,21 @@
+# Installing from Github
+
+One of the best things about poutting your package on github is that you can install them directly from Github using simple commands. To do this we need to install the devtools package:
+
+```{r,eval=F}
+install.packages("devtools")
+```
+
+To install an R package from Github do this:
+
+```{r,eval=F}
+library(devtools)
+install_github("shambam/SCAP")
+```
+
+Thats it. Hopefully you can see why having your code packaged and on Github is an incredibly useful thing to do. Your code is documented and distributable to anyone in the world. Another good reason is that future employers have a chance to look at your code and check out your style. If you are an experimental person, having a Github profile is a huge plus which will show your eagerness to code and share your work.
+
+Now that we have a working package, we'll keep extending the functionality of it.
+
+
+

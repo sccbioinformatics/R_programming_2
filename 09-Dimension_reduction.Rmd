@@ -1,0 +1,66 @@
+# Clustering and UMAPs
+Clustering is a very common step where cells with similar gene expression profiles are grouped together. There are a choice of clustering algorithms, and in R Programming 1 we implemented hierarchical and kmeans clustering. During single-cell analysis, cells are clustered by generating a graph of first on which an algorithm is applied to find communities (clusters). We are going to apply Leiden clustering on the data here using.
+
+This bit is a little trickier, so we'll do it together.
+
+## Principal components
+In order to do this we need to perform a few more steps, the first of which is calculate principle components (these will be used again to make a UMAP). Principal components are used to two things 1) clustering the cells, and 2) making the UMAP. We're not going to calculate PCs from scratch, instead we'll use a function baked into base R instead.
+
+Before we crack on, it worth brushing up on what principal components are and and what PCA is. [This video](https://www.youtube.com/watch?v=FgakZw6K1QQ) is well worth a watch, and follow it with [this shorter one](https://www.youtube.com/watch?v=HMOI_lkzW08).
+
+The best thing to do is extract the data you need and start prototyping on it. Lets grab the data we need from our `pbmc` object:
+
+```{r,eval=F}
+req.data <- pbmc@data.scale[pbmc@hvgs,]
+```
+
+***Exercise:*** Take a look at the `prcomp` function. Work out how to use it on the scaled data for just the 2000 HVGs we calculated, and store the first 50 rotated PCs of the cells.
+
+```{r,eval=F,class.source = 'fold-hide'}
+dd.pr <- prcomp(t(dd),center=FALSE)$x
+```
+
+
+Now we need to calculate a shared nearest neighbour (SNN) graph which we will  do this using the `RANN` package. So install it! This is a prerequisite of the Leiden clustering algorithm, and I got this procedure from [here](https://github.com/TomKellyGenetics/leiden).
+
+```{r,eval=F}
+library(RANN)
+snn <- nn2(dd.pr[,1:10], k=30)$nn.idx # calculate the graph using 30 max nearest neighnours using he first 10 principal components
+adjacency_matrix <- matrix(0L, nrow(dd.pr), nrow(dd.pr)) # make an empty cell x cells matrix
+
+rownames(adjacency_matrix) <- colnames(adjacency_matrix) <- colnames(dd) # names the rows and the columns 
+
+#populated the adjacency matrix saying which cells are connected to which other cells using the calculated weights.
+for(ii in 1:nrow(dd.pr)) {
+    adjacency_matrix[ii,rownames(dd.pr)[snn[ii,]]] <- 1L
+}
+#check that rows add to k
+sum(adjacency_matrix[1,]) == 30
+table(apply(adjacency_matrix, 1, sum))
+
+clus <- leiden(adjacency_matrix) # calculate the clusters
+
+```
+
+
+***Exercise:*** Put the code above into your package and place the clusters into the meta data of your object under the heading `clusters`. Remember to keep it flexible where users can supply how many PCs and neighbours they want to use. Make a separate function to calculate and store principal components. When you are done you should be able to do this:
+
+```{r,eval=F}
+library(SCAP)
+pbmc.data <- readRDS("/home/shamit/Git/R_programming_2/PBMC_data.rds")
+pbmc <- CreateMySCO(as.matrix(pbmc.data))
+pbmc <- CalcMitoPct(pbmc,"^MT-")
+MakeQCPlots(pbmc)
+pbmc <- FilterData(pbmc,sub="features > 200 & features < 2500 & perc.mt < 5",min.cells=3)
+pbmc <- NormaliseData(pbmc,10000)
+pbmc <- FindHVGs(pbmc,2000)
+PlotHVGs(pbmc)
+pbmc <- ScaleData(pbmc)
+pbmc <- CalcPCs(pbmc)
+pbmc <- ClusterCells(pbmc,nPC=10,nK=30)
+```
+
+We're almost there. We're now going to use the PCs we have calculated to make a UMAP, but now would be a good time to push to github.
+
+
+

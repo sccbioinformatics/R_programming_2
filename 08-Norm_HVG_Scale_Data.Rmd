@@ -1,0 +1,59 @@
+# Normalising data
+
+Each cell has a different number of counts, and we need to normalise for this. We'll use the simplest startegy Seurat offers which is to divide the expression of each gene by the total number of reads in cell, and then multiplying by a scaling factor which is a constant. In this case 10,000
+
+***Exercise*** Write a function called `NormaliseData` that takes a mysco object and scaling factor and returns a normalised matrix. *Consider*: where will you put this matrix?
+
+# Find the highly variable genes
+
+Most genes do not vary a significant amount across cells which means they provide very little information hence are not used for things like generating PCAs and UMAPs. In the Seurat tutorial you will see that they plot the mean vs the *standardised* variance. We are going to learn how to do this.
+
+The method to calculate this is given in this [paper](https://www.sciencedirect.com/science/article/pii/S0092867419305598?via%3Dihub#sec4), but the premise is that the variance of a gene is correlated to the mean expression of the gene, therefore the selection of HVGs has to take this into account.
+
+Lets take a quick look at the problem by extracting the filtered count matrix and plotting the mean of each gene vs the variance.
+
+```{r,eval=F}
+library(SCAP)
+pbmc.data <- readRDS("/home/shamit/Git/R_programming_2/PBMC_data.rds")
+pbmc <- CreateMySCO(as.matrix(pbmc.data))
+pbmc <- CalcMitoPct(pbmc,"^MT-")
+##MakeQCPlots(pbmc)
+pbmc <- FilterData(pbmc,sub="features > 200 & features < 2500 & perc.mt < 5",min.cells=3)
+pbmc <- NormaliseData(pbmc,10000)
+
+plot(log(apply(pbmc@counts,1,mean)),log(apply(pbmc@counts,1,var)))
+```
+
+You'll see that that as the mean expression rises, so does the variance. This means that if you pick the top X (say 2000), they will only come from generally high expressing genes. We need to perform variance-stabilising transformation to correct this. The procedure is:
+
+1. Using the **raw count data**, calculate the variance and mean of each gene.
+2. Log transform each to base 10.
+3. Perform a loess fitting of the variances from the means and antilog the fitted values.
+4. z-score normalise the count data using these predicted variances using the formula:
+
+$$z_{ij}=\frac{x_{ij}-\hat{x}_i}{\sigma _i}$$
+where $z_{ij}$ is the standardized value of feature i in cell j, $x_{ij}$ is the raw value of feature i in cell j, $\hat{x}_i$ is the mean raw value for feature i, $\sigma _i$ and is the expected standard deviation of feature i derived from the global mean-variance fit. **Hint:** the standard deviation is the square-root of the variance.
+
+5. You will have some extreme values in the matrix, so we set a cap which is $\sqrt{N}$ where $N$ is the number of cells. Replace the values greater than this value with the cap value.
+
+6. Finally, calculate the gene variances from these standardised values and plot them against the gene means from step 1.
+
+Now that you can VST normalise data and get your HVGs. Go to your package and put all your code into a function called `FindHVGs`. Think about where you will put your results (means and standarised variances). Also, write a  Install your package and check to see it works, and then push to Github when you're happy.
+
+So now we should be able to do this:
+
+```{r,eval=F}
+library(SCAP)
+pbmc.data <- readRDS("/home/shamit/Git/R_programming_2/PBMC_data.rds")
+pbmc <- CreateMySCO(as.matrix(pbmc.data))
+pbmc <- CalcMitoPct(pbmc,"^MT-")
+##MakeQCPlots(pbmc)
+pbmc <- FilterData(pbmc,sub="features > 200 & features < 2500 & perc.mt < 5",min.cells=3)
+pbmc <- NormaliseData(pbmc,10000)
+pbmc <- FindHVGs(pbmc,2000)
+PlotHVGs(pbmc)
+```
+
+# Scale the data
+What we will do now is something we did in R programming I which is to zscore standardise the data using the matrix in `pbmc@data.norm`. Write a function in your package that does this and puts a scaled matrix of data into a slot called `data.scale` in your class.
+

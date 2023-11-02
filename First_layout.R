@@ -9,11 +9,13 @@ pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k")
 # write a dense matrix
 write.table(pbmc.data,"PBMC_full_matrix.txt")
 
-fd <- as.matrix(read.delim("PBMC_full_matrix.txt",header=T,row.names=1,sep="\t"))
+fd <- as.matrix(read.delim("../PBMC_full_matrix.txt",header=T,row.names=1,sep="\t"))
 
 # Initialize the Seurat object with the raw (non-normalized data).
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
 pbmc
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
 
 VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
 
@@ -68,6 +70,69 @@ p1|p2
 ## make the same plots as seurat scatters
 
 #subset the data.frame:
-d.filt <- qc.df %>% filter(features  < 2500) %>% filter(features  > 200) %>% filter(perc.mt < 5)
+d.filt <- qc.df %>% filter(features  <= 2500) %>% filter(features  >= 200) %>% filter(perc.mt <= 5)
 
 count.filt <- fd[names(which(min.cls>2)),rownames(d.filt)]
+
+#make a list
+
+
+#######
+# Use the package
+
+
+library(SCAP)
+
+pbmc.data <- readRDS("/home/shamit/Git/R_programming_2/PBMC_data.rds")
+pbmc <- CreateMySCO(as.matrix(pbmc.data))
+pbmc <- CalcMitoPct(pbmc,"^MT-")
+#MakeQCPlots(pbmc)
+pbmc <- FilterData(pbmc,sub="features > 200 & features < 2500 & perc.mt < 5",min.cells=3)
+pbmc <- NormaliseData(pbmc,10000)
+pbmc <- FindHVGs(pbmc,2000)
+PlotHVGs(pbmc)
+pbmc <- ScaleData(pbmc)
+pbmc <- CalcPCs(pbmc)
+pbmc <- ClusterCells(pbmc,nPC=10,nK=30)
+pbmc <- MakeUMAP(pbmc,nPC=10)
+
+
+dd <- pbmc@data.scale[pbmc@hvgs,]
+dd.pr <- prcomp(t(dd),center=FALSE)$x
+
+
+snn <- RANN::nn2(dd.pr[,1:10], k=30)$nn.idx
+adjacency_matrix <- matrix(0L, nrow(dd.pr), nrow(dd.pr))
+
+rownames(adjacency_matrix) <- colnames(adjacency_matrix) <- colnames(dd)
+
+for(ii in 1:nrow(dd.pr)) {
+    adjacency_matrix[ii,rownames(dd.pr)[snn[ii,]]] <- 1L
+}
+#check that rows add to k
+sum(adjacency_matrix[1,]) == 30
+table(apply(adjacency_matrix, 1, sum))
+
+clus <- leiden(adjacency_matrix)
+
+plot(dd.pr[,1:2])
+
+
+points(dd.pr[which(clus==1),1:2],col="red")
+
+
+ump <- umap(dd.pr[,1:10])
+#ump.gex <- umap(t(pbmc@data.scale[pbmc@hvgs,]))
+
+
+plot(ump$layout)
+
+tcols <- terrain.colors(max(clus))
+
+points(ump$layout[which(clus==1),1:2],col="red")
+
+for(i in 1:max(clus)){
+
+  points(ump$layout[which(clus==i),1:2],col=tcols[i])
+
+}

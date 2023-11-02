@@ -1,0 +1,37 @@
+# UMAPs
+
+It's time. We're finally going to make a UMAP. Before we start, it makes sense you have an idea how UMAPs are constructed, and for this there is another great [video](https://www.youtube.com/watch?v=eN0wFzBA4Sc) from StatQuest explaining it.
+
+In the case of single-cell data, the starting point is not the expression data put the PCs. The reason fo this is mainly computational efficiency where comparing 30 values per cell of more computationally efficient than comparing 2000 or all genes. We're no going to program UMAP from scratch, instead using the `umap` from the umap library.
+
+***Exercise:*** Install the `umap` library.
+
+Let do the same thing we did when calculating neighbours and clusters.  We'll take our object and extract the PCs again so we can prototype our code before we turn it into a package.
+
+```{r,eval=F}
+dat.pcs <- pbmc@pcs
+```
+
+***Exercise:*** Take a look at the umap function and apply it to this matrix for $X$ number of components, and plot a 2D representation. When you are happy it works, add this function to your package and push to Github.
+
+You should now be able to do something like this:
+
+```{r,eval=F}
+library(SCAP)
+pbmc.data <- readRDS("/home/shamit/Git/R_programming_2/PBMC_data.rds")
+pbmc <- CreateMySCO(as.matrix(pbmc.data))
+pbmc <- CalcMitoPct(pbmc,"^MT-")
+MakeQCPlots(pbmc)
+pbmc <- FilterData(pbmc,sub="features > 200 & features < 2500 & perc.mt < 5",min.cells=3)
+pbmc <- NormaliseData(pbmc,10000)
+pbmc <- FindHVGs(pbmc,2000)
+PlotHVGs(pbmc)
+pbmc <- ScaleData(pbmc)
+pbmc <- CalcPCs(pbmc)
+pbmc <- ClusterCells(pbmc,nPC=10,nK=30)
+pbmb <- MakeUMAP(pbmc,nPC=10)
+```
+
+***Exercise:*** Plot your UMAP, and colour the cells by the cluster they belong to. Write a function that plots a UMAP colouring by a user specified criteria. Add this to your package!
+
+This is what I consider to be a very basic processing steps for single-cell data, but importantly you have a good idea of how the process works, and how R packages are built.

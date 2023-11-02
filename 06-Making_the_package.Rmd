@@ -1,0 +1,39 @@
+# Making our package
+
+## Multiple files.
+
+A good practice is to make many .R files rather than putting all your code into one huge one. These files should also be named in a way where the contents are going to be clear.
+
+***Exercise:*** Make a new file in `R/` which has you code to make a new instance of `mysco`. Document the function so people know how to use it.
+
+What you should be aiming for is being able to do this:
+
+```{r,eval=F}
+library(SCAP)
+
+pbmc.data <- readRDS("PBMC_data.rds")
+pbmc <- CreateMySCO(pbmc.data)
+```
+
+Put your `show` method in to the package.
+
+Now add your `CalcMitoPct`,`MakeQCPlots(pbmc)`, and `FilterData` into your package.
+
+
+So you should be able to run these lines:
+
+```{r,eval=F}
+library(SCAP)
+
+pbmc.data <- readRDS("PBMC_data.rds")
+pbmc <- CreateMySCO(pbmc.data)
+pbmc <- CalcMitoPct(pbmc,"^MT-")
+MakeQCPlots(pbmc)
+pbmc <- FilterData(pbmc,sub=features > 200 & features < 2500 & perc.mt < 5,min.cells=3)
+pbmc
+```
+
+Easy right? :)
+
+When you're happy that your package is working so far, push it up to Github.
+
