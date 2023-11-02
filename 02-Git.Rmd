@@ -125,6 +125,9 @@ no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
 Now, git recognizes that `amazing.txt` has been changed, but tells us that we haven't added those changes to the stage, and gives us some familiar hints on how to use `git add`.
+
+It also hints us about one of the usage of `git restore`, a command we haven't mentioned yet. **Note that running** `git restore amazing.txt` **would delete our changes that we have made to this file. This can not be undone.**
+
 It also tells us that the next commit is, so far, empty.
 
 Let's run `git add` and see what  `git status` returns.
@@ -138,9 +141,9 @@ Changes to be committed:
 	modified:   amazing.txt
 ```
 
-Now git shows us that the changes have been staged, and are ready to be committed. Should you here realize that you don't want those changes in this commit, git also gives us a hint on how `git restore` works. We haven't mentioned `git restore` before, it's basically the opposite of `git add`, instead of adding a file to the stage, it removes it from the stage. Again, the contents of the file are untouched by git, it's just git's view of your working tree that is changed.
+Now git shows us that the changes have been staged, and are ready to be committed. Should you here realize that you don't want those changes in this commit, git also gives us another hint on how `git restore --staged` works. Here, it's basically the opposite of `git add`, instead of adding a file to the stage, it removes it from the stage. This time, the contents of the file would be untouched by git, it's just git's view of your working tree that is changed. Be very careful when unstaging files so you don't accidentally lose any work.
 
-Let's make a commit to return to the stage we were in before this section.
+Let's make a commit to return to the state we were in before this section.
 
 ```
 $ git commit -m "add more amazingness"
@@ -194,24 +197,42 @@ Finally, we use `git push` to upload our changes (the creation of the `README.md
 
 Whenever there are changes made by anyone else working in the same repository, you can download those changes with `git pull`. In this course however, you will be working alone in your repository.
 
+```{r, echo = FALSE, out.width = 330, out.height = 478 , fig.align = 'center'}
+knitr::include_graphics("images/git_xkcd.png")
+```
+Image from [xkcd 1597](https://xkcd.com/1597/).
+
 ## Further reading
 
-There is *a lot* more that git can do that we haven't covered in this version control crash course. If you have time, you can familiarize yourself with the more advanced concepts of git here.
+There is *a lot* more that git can do that we haven't covered in this version control crash course. If you have time, you can familiarize yourself with some of the more advanced concepts of git here.
 
 Click on a word to expand.
+
+
+<details>
+  <summary>
+    The `.gitignore` file
+  </summary>
+  If you don't want a file to ever be included in a commit, and you don't want to see it in the `git status` command when there are changes in the file, you can add the file to the `.gitignore` file. This file should be in the root of your repository. Any file mentioned in the `.gitignore` will be ignored by commands such as `git status` and `git add`. This is useful for files containing sensitive information, files that are generated when building or running your code, user-specific configuration files, or files that are just for testing.
+  
+  In the `.gitignore`, each file you want ignored should be on a separate line, comments can be written by starting a line with a `#`. Just like `git add`, the `.gitignore` file allows wildcards or directories as input, and will ignore any files matching the wildcard, or any files inside the directory that is ignored.
+  
+</details>
 
 <details>
   <summary>
     `git clone`
   </summary>
   Downloading a repository is often called "cloning" the repository, because the command to do so is `git clone <url>`. Anyone can clone any public repository on Github (or similar websites), but you need special permissions to be able to `push` any commits back up to the repository.
+  
 </details>
 
 <details>
   <summary>
     `head` and `git checkout`
   </summary>
-  Git keeps track of where your working tree is in relation to the repository by using something calls `heads`. A `head` is basically a pointer to a specific commit. Confusingly, the `head` that your working tree is at at any time, is named `HEAD`, in all caps. You can move your working tree's `head` (the one named `HEAD`) using `git checkout <commit hash>`. This will make git backtrack through its history and change the files in your working tree to exactly what they were when the commit you entered was made. To go back to the most current state of the repository, use `git checkout <branch name>`.
+  Git keeps track of where your working tree is in relation to the repository by using something calls `heads`. A `head` is basically a pointer to a specific commit. Confusingly, the `head` that your working tree is at at any time, is named `HEAD`, in all caps. You can move your working tree's `head` (the one named `HEAD`) using `git checkout <commit hash>`. This will make git backtrack through its history and change the files in your working tree to exactly what they were when the commit you entered was made. To go back to the most current state of the repository, use `git checkout <branch name>`.'
+  
 </details>
 
 <details>
@@ -219,6 +240,7 @@ Click on a word to expand.
     `git checkout <file>`
   </summary>
   This command will overwrite `<file>` with the version that was in the last commit. Useful if you accidentally deleted a file and need it back, or are unhappy with some changes and want the old version again. Note that this command **cannot be undone**.
+  
 </details>
 
 <details>
@@ -233,6 +255,7 @@ Click on a word to expand.
   Typically in larger projects, anytime a developer starts working on a new feature, they will create a branch for it, implement said feature on their new branch, and then merge it back into the main branch.
   
   Each branch has its own `head`, with the name that you named the branch. You can interact with these `heads` using `git checkout` and `git reset`, but be aware that this can permanently delete commits.
+  
 </details>
 
 <details>
@@ -242,6 +265,7 @@ Click on a word to expand.
   A common feature that is used in the world of git is forking a repository. Forking a repository is basically downloading a copy of someone else's repository, and then uploading that copy under your account, as a new repository marked as a fork. This is a common way for developers to create features or fix bugs in open source software, when they don't have the permissions to push commits directly to the original repository.
   
   Once a feature or bug fix has been done in a forked repository, the developer will make what is called a "pull request" in the original repository. This is a request for the developers in the original repository to pull the changes that were made in the fork. This is typically also done through "issues", which are concerns or feature requests that users or developers can make through a forum-like part of websites like Github. Pull requests can be directly linked, viewed, discussed, approved, and merged through the issue tracker.
+  
 </details>
 
 <details>
@@ -254,6 +278,7 @@ Click on a word to expand.
 `git reset` is a very powerful, and potentially, very destructive command. It has no confirmation and can delete your files and commits when used. You can use `git reset <file>` to unstage a file, this is similar to `git restore --staged <file>` and does not change the contents of the file.
 
 Using `git reset <commit hash>` will move your `HEAD` **and your branch's** `head` to that commit. **This will delete any commits made after the commit you reset to from git's history. This can not be undone or recovered from if you have not pushed those commits to a remote**. Using `git push` after using `git reset` this way will **overwrite the remote repository, deleting the commits from the remote**. This is useful if you need some commits deleted from the history because you pushed sensitive files that should not be public, but incredibly damaging when used the wrong way.
+
 </details>
 
 <details>
@@ -266,6 +291,7 @@ $ git config --global alias.hist "log --pretty=format:'%C(yellow)[%ad]%C(reset) 
 ```
 
 This configures a new git command `git hist` which summarizes each commit with pretty colours, and displays all branches with some nice lines.
+
 </details>
 
 <details>
@@ -273,6 +299,7 @@ This configures a new git command `git hist` which summarizes each commit with p
     `git stash`
   </summary>
   Whenever you merge changes from someone else, you will likely run into some merge conflicts. Whenever two people have commits that contain changes to the same parts of the same file, git won't always know what to do. There are two versions of this file that git considers equally "new". Before you merge a branch, it is useful to stage your files, and run `git stash`, this will change the files in your working tree. Git will rollback the tracked files to the version they were at the last commit, you can then `git pull` someone's changes and then use `git stash pop` to resolve the conflicting files locally, and commit the updated changes.
+  
 </details>
 
 <details>
@@ -280,6 +307,7 @@ This configures a new git command `git hist` which summarizes each commit with p
     Credential managers
   </summary>
   Depending on your system and setup, you might have access to some credential manager that can save your password for each session. You can type `git config --global credential.helper manager` or `git config --global credential.helper cache` to use these.
+  
 </details>
 
 <details>
@@ -289,6 +317,7 @@ This configures a new git command `git hist` which summarizes each commit with p
   GUI stands for graphical user interface, and is sometimes used to refer to "any program that isn't run through only a terminal". The author of this part of the course is a grumpy and stubborn old fart that refuses to use git from anything that isn't a terminal. As you are still learning, there is still hope for you. There are plenty of free git GUI clients available, like [GitKraken](https://www.gitkraken.com/), [GitHub Desktop](https://desktop.github.com/) or [SourceTree](https://www.sourcetreeapp.com/) to name a few. If you are feeling like the terminal isn't for you, we encourage you to experiment with these and find one you like.
   
   Note that using a GUI client doesn't mean you can not use the terminal also, you can always open your local repository and execute commands from a terminal and then return to the GUI and keep working from there.
+  
 </details>
 
 <details>
@@ -299,4 +328,5 @@ This configures a new git command `git hist` which summarizes each commit with p
   [Git visualiser](https://git-school.github.io/visualizing-git/)  
   [Codecademy git tutorial](https://www.codecademy.com/learn/learn-git)  
   [A more technical tutorial](https://www.cduan.com/technical/git/)  
+  
 </details>
