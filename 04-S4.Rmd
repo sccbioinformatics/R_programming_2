@@ -9,7 +9,7 @@ pbmc <- list(meta=meta, counts=count.filt)
 names(pbmc)
 ```
 
-A recap on accing data objects:
+A recap on accessing data objects:
 
 ```{r}
 pbmc$meta[1:10,] # access the first 10 rows of the metadata
@@ -34,7 +34,7 @@ In this line we define what your mysco class/container will accept. Here, only d
 pbmc <- new("mysco",meta=meta,counts=count.filt)
 ```
 
-You can see that when you call $pbmc$ in the console it will splurge all the data onto the screen. Now is a good time for us to define a function that summarises the objects contents:
+You can see that when you call `pbmc` in the console it will splurge all the data onto the screen. Now is a good time for us to define a function that summarises the objects contents:
 
 ```{r}
 setMethod('show', signature = c ('mysco'),
@@ -71,7 +71,7 @@ In the definition of the class we'll see that a matrix is required. Lets see wha
 pbmc <- new("mysco",meta=meta,counts=data.frame(count.filt))
 ```
 
-You can see that it complains because it expected a martrix, but we tried to give it a data frame. This is why S4 classes as useful, there is a sanity check before the object is created so all downstream process work as expected. Speaking of sanity, what do we think of this?
+You can see that it complains because it expected a matrix, but we tried to give it a data frame. This is why S4 classes are useful, there is a sanity check before the object is created so all downstream process work as expected. Speaking of sanity, what do we think of this?
 
 ```{r,eval=F}
 pbmc.v2 <- new("mysco",meta=meta,counts=count.filt[,-(1:5)]) # remove the first 5 columns (cells) of the data.
@@ -100,11 +100,13 @@ You can see that S4 classes are a very safe way of storing data in R because the
 
 ***Exercise:*** Extend this validator to check the cell IDs match in the data and metadata.
 
+This is also a good time to make a commit and push our work so far to Github.
+
 ## Wrapper and accessor functions
 
 Have a look at the Seurat tutorial. You will see a function called `CreateSeuratObject`. This function takes a matrix and then automatically calculates the `features`, `nCounts` and puts it into metadata.
 
-***Exercise:*** Create a function called `CreateMySCO` which take a data matrix (`pbmc.data`) and creates an mysco class containing the raw unfiltered data and the `features`/`nCounts` in the meta slot. Call the resulting object `pbmc`, hence over-writing the current one.
+***Exercise:*** Create a function called `CreateMySCO` which takes a data matrix (`pbmc.data`) and creates an mysco class containing the raw unfiltered data and the `features`/`nCounts` in the meta slot. Call the resulting object `pbmc`, hence over-writing the current one.
 
 ```{r,class.source = 'fold-hide',results=T}
 
@@ -195,3 +197,4 @@ pbmc <- FilterData(pbmc,sub=features > 200 & features < 2500 & perc.mt < 5,min.c
 pbmc
 ```
 
+Once your new functions are all working, make another commit and push your work to Github.

@@ -27,6 +27,6 @@ description: "This is a minimal example of using the bookdown package to write a
 
 # The fun starts now…
 
-The purpose of this course is to extend your knowledge of R and start exploring the idea of classes, object-orientated programming, package creation and version control. This may all sound like jargon right now, but all will become clearer as we go on. By combining these skill the aim is that you will start developing your own tools and making them available for anyone to use.
+The purpose of this course is to extend your knowledge of R and start exploring the idea of classes, object-orientated programming, package creation and version control. This may all sound like jargon right now, but all will become clearer as we go on. By combining these skills the aim is that you will start developing your own tools and making them available for anyone to use.
 
 This will be a fairly intense workshop, but it will boost your knowledge and confidence even further, and will hopefully teach you how to read other peoples' code too which is very important.

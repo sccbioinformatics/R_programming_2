@@ -1,5 +1,5 @@
 # R II
-The aim of this section is to serve as a reminer how data is stored in R, particularly matrices, data frames and lists.
+The aim of this section is to serve as a reminder how data is stored in R, particularly matrices, data frames and lists.
 
 ## Getting some data
 
@@ -38,7 +38,7 @@ pbmc.data <- as.matrix(pbmc.data)
 ```
 
 ## QC
-This is where we can start to look at doing some basic QC and filtering. We#ll use the Seurat PBMC tutorial and copy their process as much as possible.
+This is where we can start to look at doing some basic QC and filtering. We'll use the Seurat PBMC tutorial and copy their process as much as possible.
 
 ***Exercise:*** Go to the tutorial page and look the first violin plot. Using your matrix of count data, reproduce the plot you see there using ggplot2. You'll need to calculate "nFeature_RNA", "nCount_RNA", and "percent.mt" first! **In a departure from R Programming I, you can use ChatGPT for help**.
 
@@ -80,7 +80,7 @@ p1+p2
 
 We have the plots we need to filter the data. Using the same filtering criteria setout in the tutorial, filter the expression data and the metadata you calculated. Check the number of cells and genes you have match what they have in the tutorial.
 
-```{r,class.source = 'fold-hide',results=T}
+```{r,class.source = 'fold-hide',results=T, message=F}
 library(dplyr)
 meta <- qc.df %>% filter(features  <= 2500) %>% filter(features  >= 200) %>% filter(perc.mt <= 5)
 
@@ -88,6 +88,15 @@ count.filt <- pbmc.data[names(which(min.cls>2)),rownames(meta)]
 dim(count.filt)
 ```
 
+This looks like a good point to take a breather from R and save our work to our Github repository that we made earlier.
 
+Run `git status`, stage your file(s), make your changes into a commit and push it to our remote.
+
+```{bash, class.source='fold-hide', eval=F}
+$ git status
+$ git add path/to/my_script.R
+$ git commit -m "create data reader and filtering"
+$ git push
+```
 
 

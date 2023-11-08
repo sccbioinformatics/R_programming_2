@@ -20,7 +20,7 @@ To start using git, navigate to a folder where you want to your project root to 
 
 Example:
 
-```
+```{bash, eval=F}
 $ mkdir my_first_repo
 $ cd my_first_repo
 $ git init
@@ -61,7 +61,7 @@ knitr::include_graphics("images/commits.png")
 ## The basic workflow
 Now that you have made a local git repository and have learnt some of the commonly used words in git, lets create a file and document our first change.
 
-```
+```{bash, eval=F}
 $ echo "this file is amazing" > amazing.txt
 $ git add amazing.txt
 $ git commit -m "create an amazing file"
@@ -82,7 +82,7 @@ This command takes all files in the staging area, and makes a commit out of them
 
 The first time you run `git commit` you will likely be met with another one-time error message. In order for git to create your commit you must sign it with your name and email. Go ahead and run the two lines that git hints at in the error message so git knows what name and email to sign your commits with.
 
-```
+```{bash, eval=F}
 $ git config --global user.email "you@example.com"
 $ git config --global user.name "Your Name"
 ```
@@ -101,7 +101,7 @@ It is considered very bad practice to add every file, instead of specifying file
 
 `git status` is an incredibly useful command when using and learning git. It will show you which state you are currently in, which files are staged and not staged, how many commits ahead or behind you are. Let's see what the state of our repository is after we have made our previous commit.
 
-```
+```{bash, eval=F}
 $ git status
 On branch main
 nothing to commit, working tree clean
@@ -112,7 +112,7 @@ Secondly, it tells us that there is nothing to commit and that the working tree 
 
 Let's make a change to our `amazing.txt` file and see what  `git status` tells us.
 
-```
+```{bash, eval=F}
 $ echo "more amazing text" >> amazing.txt
 $ git status
 On branch main
@@ -126,13 +126,13 @@ no changes added to commit (use "git add" and/or "git commit -a")
 
 Now, git recognizes that `amazing.txt` has been changed, but tells us that we haven't added those changes to the stage, and gives us some familiar hints on how to use `git add`.
 
-It also hints us about one of the usage of `git restore`, a command we haven't mentioned yet. **Note that running** `git restore amazing.txt` **would delete our changes that we have made to this file. This can not be undone.**
+It also hints us about one of the usages of `git restore`, a command we haven't mentioned yet. **Note that running** `git restore amazing.txt` **would delete our changes that we have made to this file. This can not be undone.**
 
 It also tells us that the next commit is, so far, empty.
 
 Let's run `git add` and see what  `git status` returns.
 
-```
+```{bash, eval=F}
 $ git add amazing.txt
 $ git status
 On branch main
@@ -143,9 +143,11 @@ Changes to be committed:
 
 Now git shows us that the changes have been staged, and are ready to be committed. Should you here realize that you don't want those changes in this commit, git also gives us another hint on how `git restore --staged` works. Here, it's basically the opposite of `git add`, instead of adding a file to the stage, it removes it from the stage. This time, the contents of the file would be untouched by git, it's just git's view of your working tree that is changed. Be very careful when unstaging files so you don't accidentally lose any work.
 
+Instead of using `git restore` and/or `git restore --staged`, I recommend you use `git reset` to unstage files. `git reset` won't change the contents of your files unless you pass the `git reset --hard` option and using `git reset` on a file that is not staged, simply does nothing. This has (in my experience) been less likely to result in lost work.
+
 Let's make a commit to return to the state we were in before this section.
 
-```
+```{bash, eval=F}
 $ git commit -m "add more amazingness"
 ```
 
@@ -159,7 +161,7 @@ The two main commands to interact with a remote (such as a repository hosted on 
 
 Try typing `git push` and see what happens.
 
-```
+```{bash, eval=F}
 $ git push
 fatal: No configured push destination.
 Either specify the URL from the command-line or configure a remote repository using
@@ -179,7 +181,7 @@ After this, you will be redirected to a page with a lot of text and git commands
 
 We have already made a repository locally, but let's start with a fresh one for this part. Make a new folder named the same thing as your repository and follow the code in the first box. You don't *have* to name the folder the same thing as the remote repository, it's just good practice.
 
-```
+```{bash, eval=F}
 $ mkdir R-Programming-2
 $ cd R-Programming-2
 $ echo "# R-Programming-2" >> README.md
@@ -286,7 +288,7 @@ Using `git reset <commit hash>` will move your `HEAD` **and your branch's** `hea
     `git show` and `git log`
   </summary>
   Both these commands show the recent history in your local repository. `git show` will show what was in the most recent commit. `git show --online` is convenient if you need the last commit hash for example. `git log` will show the last 5 commits in a shorter format. If you want this formatted in a nicer way, we recommend you run 
-```
+```{bash, eval=F}
 $ git config --global alias.hist "log --pretty=format:'%C(yellow)[%ad]%C(reset) %C(green)[%h]%C(reset) | %C(red)%s %C(bold red){{%an}}%C(reset) %C(blue)%d%C(reset)' --graph --date=short"
 ```
 

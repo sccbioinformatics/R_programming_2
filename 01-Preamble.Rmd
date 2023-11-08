@@ -45,6 +45,6 @@ If you aren't comfortable with most of this list, then this course might not be 
 
 This course will take it up a notch, and we will demonstrate all the concepts mentioned earlier using single-cell data as our primary working material. Using this, we will learn how data is organised in R and how functions are written to analyse this data by using Seurat as an example. We will also learn how to make a small R package.
 
-Importantly we will learn how to use version control and Github to make your code available online to anyone. Your package will installable from anywhere with an internet connection. Because version control is so important, we will start with this.
+Importantly, we will learn how to use version control and Github to make your code available online to anyone. Your package will installable from anywhere with an internet connection. Because version control is so important, we will start with this.
 
 

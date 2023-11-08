@@ -15,10 +15,10 @@ Rstudio will make the folder and change you session directory to it.
 
 4. When you create the repo you will see some lines of code to perform your first push. In my case:
 
-```
+```{bash, eval=F}
 $ echo "# SCAP" >> README.md
 $ git init
-$ git add DESCRIPTION  man  NAMESPACE  R  README.md  SCAP.Rproj
+$ git add DESCRIPTION  man  NAMESPACE  R  README.md  SCAP.Rproj .Rbuildignore
 $ git commit -m "first commit"
 $ git branch -M main
 $ git remote add origin git@github.com:shambam/SCAP.git
@@ -28,6 +28,14 @@ $ git push -u origin main
 5. Open a terminal and navigate to your project folder and execute these lines. **Don't forget to swap "shambam" with your own Github ID**.
 
 6. Once you have done this you are ready to push you package up to Github as you create it.
+
+If you run `git status` in your newly created directory you will see the `.Rproj.user` directory, marked as "untracked". You shouldn't push this directory as it only contains user specific settings, and we don't want to override anyone else's settings if they choose to clone our project. This is a prime example of why you should never use `git add .`. If we don't want to accidentally include this file in any future commit, we can add it to a file called `.gitignore`. Go ahead and create this file using
+
+```{bash, eval=F}
+$ echo ".Rproj.user" > .gitignore
+```
+
+You can add any future files or directories you don't want to include in commits by adding them to this file, one item per line. Go ahead and add the `.gitignore` file as well to a new commit and run `git status` to make sure `.Rproj.user` doesn't pop up there anymore. As a small bonus exercise; what happens if you run `git add .Rproj.user` when it is in our `.gitignore`?
 
 ## The anatomy of a package
 
@@ -69,18 +77,18 @@ hello <- function() {
 
 Before we can build the documentation we need to install the package that will do it:
 
-```{r}
+```{r, eval=F}
 install.packages("roxygen2")
 ```
 
-Go to "More" > "Configure Build Tools..." and check the box that says "Generate documentation with Roxygen". At the bottom check "Install and restart". NJow when you install the package Rstudio will automatically generate the hello.Rd file from the lines of documentation you have written above.
+Go to "More" > "Configure Build Tools..." and check the box that says "Generate documentation with Roxygen". At the bottom check "Install and restart". Now when you install the package Rstudio will automatically generate the hello.Rd file from the lines of documentation you have written above.
 
 This is great because all the documentation is kept in the same file as the code which means both can be written together easily.
 
 ## Adding dependencies.
 Dependencies are other packages that your own package needs to function. For example, to make the QC plots you'll need the `ggplot2` library. To add this, open the DESCRIPTION file.
 
-You add a package nby making an imports section:
+You add a package by making an imports section:
 
 ```
 Package: SCAP
