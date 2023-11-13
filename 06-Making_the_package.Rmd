@@ -4,7 +4,7 @@
 
 A good practice is to make many .R files rather than putting all your code into one huge one. These files should also be named in a way where the contents are going to be clear.
 
-***Exercise:*** Make a new file in `R/` which has you code to make a new instance of `mysco`. Document the function so people know how to use it.
+***Exercise:*** Make a new file in `R/` which has your code to make a new instance of `mysco`. Document the function so people know how to use it.
 
 What you should be aiming for is being able to do this:
 

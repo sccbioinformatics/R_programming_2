@@ -2,7 +2,7 @@
 
 It's time. We're finally going to make a UMAP. Before we start, it makes sense you have an idea how UMAPs are constructed, and for this there is another great [video](https://www.youtube.com/watch?v=eN0wFzBA4Sc) from StatQuest explaining it.
 
-In the case of single-cell data, the starting point is not the expression data put the PCs. The reason fo this is mainly computational efficiency where comparing 30 values per cell of more computationally efficient than comparing 2000 or all genes. We're no going to program UMAP from scratch, instead using the `umap` from the umap library.
+In the case of single-cell data, the starting point is not the expression data but the PCs. The reason for this is mainly computational efficiency where comparing 30 values per cell is more computationally efficient than comparing 2000 or all genes. We're not going to program UMAP from scratch, instead using the `umap` function from the umap library.
 
 ***Exercise:*** Install the `umap` library.
 

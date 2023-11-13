@@ -1,8 +1,10 @@
 # Normalising data
 
-Each cell has a different number of counts, and we need to normalise for this. We'll use the simplest startegy Seurat offers which is to divide the expression of each gene by the total number of reads in cell, and then multiplying by a scaling factor which is a constant. In this case 10,000
+Each cell has a different number of counts, and we need to normalise for this. We'll use the simplest strategy Seurat offers which is to divide the expression of each gene by the total number of reads in each cell, and then multiplying by a scaling factor which is a constant. In this case 10,000
 
 ***Exercise*** Write a function called `NormaliseData` that takes a mysco object and scaling factor and returns a normalised matrix. *Consider*: where will you put this matrix?
+
+Make another commit and push this function to Github.
 
 # Find the highly variable genes
 
@@ -53,6 +55,8 @@ pbmc <- NormaliseData(pbmc,10000)
 pbmc <- FindHVGs(pbmc,2000)
 PlotHVGs(pbmc)
 ```
+
+Commit and push this code to Github.
 
 # Scale the data
 What we will do now is something we did in R programming I which is to zscore standardise the data using the matrix in `pbmc@data.norm`. Write a function in your package that does this and puts a scaled matrix of data into a slot called `data.scale` in your class.
