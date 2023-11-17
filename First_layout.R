@@ -93,7 +93,7 @@ pbmc <- FindHVGs(pbmc,2000)
 PlotHVGs(pbmc)
 pbmc <- ScaleData(pbmc)
 pbmc <- CalcPCs(pbmc)
-pbmc <- ClusterCells(pbmc,nPC=10,nK=30)
+pbmc <- ClusterCells(pbmc,nPC=10,nK=30,res=1)
 pbmc <- MakeUMAP(pbmc,nPC=10)
 
 
@@ -113,7 +113,8 @@ for(ii in 1:nrow(dd.pr)) {
 sum(adjacency_matrix[1,]) == 30
 table(apply(adjacency_matrix, 1, sum))
 
-clus <- leiden(adjacency_matrix)
+#clus <- leiden(adjacency_matrix)
+clus <- cluster_louvain(graph_from_adjacency_matrix(adjacency_matrix,mode ="undirected"),resolution = 1.2)$membership
 
 plot(dd.pr[,1:2])
 
