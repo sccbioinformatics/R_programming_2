@@ -204,6 +204,11 @@ knitr::include_graphics("images/git_xkcd.png")
 ```
 Image from [xkcd 1597](https://xkcd.com/1597/).
 
+## Why use Github as a PhD/postdoc?
+
+For a software developers, their Github profile is what potential employers will look at to see a) what kinds of projects they have done, and b) check the standard/level of their work. For a researcher like yourself, just having a Github profile will raise your standing above other candidates that do not do this. Your code *doesn't* have to be amazing, but having the confidence to put it online is an impressive quality that most future employers will appreciate.
+
+
 ## Further reading
 
 There is *a lot* more that git can do that we haven't covered in this version control crash course. If you have time, you can familiarize yourself with some of the more advanced concepts of git here.
