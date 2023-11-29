@@ -1,0 +1,17 @@
+# Things to do
+We've covered a huge amount during this course, and we hope showing the process of package creation and the processing steps behind single-cell analysis have been demystified to some extent. Now that you have the basis of an R package, there are some functions you can add in your own time to make it more usable. For example:
+
+1. Allow the user to colour cells according to gene expression level.
+2. Colour the cells according to cluster (or any other metadata the user wants to visualise).
+3. Calculate differentially expressed genes between clusters using a Wilcox test.
+
+These are just a few.
+
+```{r, echo = FALSE, out.width = 330, fig.align = 'center'}
+knitr::include_graphics("images/jerry.jpg")
+```
+
+
+The Seurat object is also an S4 class which you know how to navigate. It very common for people to come up with alternative functions/visualisations which take a Seurat object as the starting point. These are called wrapper functions, and you can often find useful packages such as [ShinyCell](https://github.com/SGDDNB/ShinyCell) which makes a GUI visualiser from a Seurat object.
+
+If you find yourself making wrapper functions, put them into a package and put them on Github. Your future self and others will thanks you.

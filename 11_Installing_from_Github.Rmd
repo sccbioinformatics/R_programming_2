@@ -1,0 +1,20 @@
+# Installing a package from Github.
+
+Placing your package/tools on Github is a great way of making sure that you have them whenever you need them. So far you have been installing your package directly from Rstudio for testing purposes, but if you want to share your work, you and others can install the package directly from Github. You can do this but running this command in R:
+
+```{r,eval=F}
+devtools::install_github("<GithubID>/<Repo name>", ref = "master")
+```
+
+In my case is would be:
+
+```{r,eval=F}
+devtools::install_github("shambam/SCAP", ref = "master")
+```
+
+The argument `ref` tells the function which branch to install from. If you have a developmemt version you want to try out you change this to the name of the desired branch.
+
+The package will be downloaded and installed. Pretty nifty huh? This was how Seurat was distributed in the early days before it was committed to CRAN. If you want to submit a package to CRAN there are [rules](https://cran.r-project.org/web/packages/policies.html) that need to be followed, the [same](https://contributions.bioconductor.org/bioconductor-package-submissions.html) for Bioconductor (which is very strict, particularly when it comes to manuals). For most putting packages on Github is enough.
+
+
+

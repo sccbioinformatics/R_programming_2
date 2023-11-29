@@ -1,0 +1,13 @@
+# Including data in a package.
+
+***This is an optional extra, but a very useful one.***
+
+R packages will often include small example datasets the user can load to try out the package without having to go and find their own. These are usually called by doing:
+
+```{r, eval=F}
+data(data.pbmc)
+```
+
+Read [this](https://kbroman.org/pkg_primer/pages/data.html) and see how you can include the raw count data in your package!
+
+
