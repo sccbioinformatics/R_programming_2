@@ -1,7 +1,7 @@
 # Clustering and UMAPs
-Clustering is a very common step where cells with similar gene expression profiles are grouped together. There are a choice of clustering algorithms, and in R Programming 1 we implemented hierarchical and kmeans clustering. During single-cell analysis, cells are clustered by generating a graph of first on which an algorithm is applied to find communities (clusters). We are going to apply Leiden clustering on the data here using.
+Clustering is a very common step where cells with similar gene expression profiles are grouped together. There are a choice of algorithms, and in R Programming 1 we implemented hierarchical and kmeans clustering. In single-cell analysis, cells are clustered by generating a graph on which an algorithm is applied to find communities (clusters). We are going to apply Louvine clustering on the data here using.
 
-This bit is a little trickier, so we'll do it together.
+This bit is trickier, so we'll do it together.
 
 ## Principal components
 In order to do this we need to perform a few more steps, the first of which is calculate principle components (these will be used again to make a UMAP). Principal components are used to two things 1) clustering the cells, and 2) making the UMAP. We're not going to calculate PCs from scratch, instead we'll use a function baked into base R instead.
@@ -17,7 +17,7 @@ req.data <- pbmc@data.scale[pbmc@hvgs,]
 ***Exercise:*** Take a look at the `prcomp` function. Work out how to use it on the scaled data for just the 2000 HVGs we calculated, and store the first 50 rotated PCs of the cells.
 
 ```{r,eval=F,class.source = 'fold-hide'}
-dd.pr <- prcomp(t(dd),center=FALSE)$x
+dd.pr <- prcomp(t(req.data),center=FALSE)$x
 ```
 
 
@@ -25,7 +25,7 @@ Now we need to calculate a shared nearest neighbour (SNN) graph which we will  d
 
 ```{r,eval=F}
 library(RANN)
-snn <- nn2(dd.pr[,1:10], k=30)$nn.idx # calculate the graph using 30 max nearest neighnours using he first 10 principal components
+snn <- nn2(dd.pr[,1:10], k=30)$nn.idx # calculate the graph using 30 max nearest neighbours using he first 10 principal components
 adjacency_matrix <- matrix(0L, nrow(dd.pr), nrow(dd.pr)) # make an empty cell x cells matrix
 
 rownames(adjacency_matrix) <- colnames(adjacency_matrix) <- colnames(dd) # names the rows and the columns 

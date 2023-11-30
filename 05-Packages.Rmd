@@ -75,7 +75,7 @@ hello <- function() {
 }
 ```
 
-Before we can build the documentation we need to install the package that will do it:
+Before we can build the documentation we need to install the package that will do it. **Note**, you may need to install the `stringi` package first, but see if it works without first!
 
 ```{r, eval=F}
 install.packages("roxygen2")

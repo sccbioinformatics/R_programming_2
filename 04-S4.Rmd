@@ -182,7 +182,7 @@ FilterData <- function(mysco,sub,min.cells){
   
   min.cls <- apply(mysco@counts >0, 1, sum)
   
-  d.filt <- subset(mysco@meta,sub)
+  d.filt <- subset(mysco@meta, eval(parse(text=sub)))
   mysco@meta <- d.filt
   mysco@counts <- mysco@counts[which(min.cls>=min.cells),rownames(d.filt)]
   mysco
@@ -193,7 +193,7 @@ FilterData <- function(mysco,sub,min.cells){
 Lets use it:
 
 ```{r}
-pbmc <- FilterData(pbmc,sub=features > 200 & features < 2500 & perc.mt < 5,min.cells=3)
+pbmc <- FilterData(pbmc,sub="features > 200 & features < 2500 & perc.mt < 5",min.cells=3)
 pbmc
 ```
 
